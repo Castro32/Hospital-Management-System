@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telemedicine Sign Up</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #3498db, #8e44ad);
+      padding: 20px;
+    }
+
+    .signup-container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .signup-container h2 {
+      text-align: center;
+      color: #3498db;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #2980b9;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .login-link a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .terms {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: #777;
+    }
+
+    .terms a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .terms a:hover {
+      text-decoration: underline;
+    }
+
+    .name-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .name-group .input-group {
+      flex: 1;
+    }
+
+    @media (max-width: 480px) {
+      .name-group {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>Sign Up To Make Appointment</h2>
+    <form  action="http://localhost:3000/signup" method="post" id="signupForm">
+      <div class="name-group">
+        <div class="input-group">
+          <label for="firstname">First Name</label>
+          <input type="text" id="firstname" name="firstname" required>
+        </div>
+        <div class="input-group">
+          <label for="lastname">Last Name</label>
+          <input type="text" id="lastname" name="lastname" required>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="6">
+      </div>
+      <div class="input-group">
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" name="confirm-password" required>
+      </div>
+      <button type="submit" class="btn">Sign Up</button>
+    </form>
+    <div class="terms">
+      By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+    </div>
+    <div class="login-link">
+      Already have an account? <a href="login.html">Log in</a>
+    </div>
+  </div>
+
+  <script>
+  document.getElementById('signupForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const formData = {
+    firstname: document.getElementById('firstname').value,
+    lastname: document.getElementById('lastname').value,
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value,
+    confirmPassword: document.getElementById('confirm-password').value
+  };
+
+  fetch('http://localhost:3000/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      alert(data.error);
+    } else {
+      alert(data.message || 'Sign up successful!');
+      // Redirect to login page or clear the form
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('There was a problem submitting the form.');
+  });
+});
+  </script>
+  
+</body>
+</html>

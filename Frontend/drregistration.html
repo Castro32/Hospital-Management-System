@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Registration</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #3498db, #8e44ad);
+    }
+
+    .registration-container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .registration-container h2 {
+      text-align: center;
+      color: #3498db;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+
+    .input-group input, .input-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #2980b9;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .login-link a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="registration-container">
+    <h2>Doctor Registration</h2>
+    <form id="doctorRegistrationForm">
+      <div class="input-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required>
+        <span id="nameError" class="error-message"></span>
+      </div>
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+        <span id="emailError" class="error-message"></span>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+        <span id="passwordError" class="error-message"></span>
+      </div>
+      <div class="input-group">
+        <label for="specialty">Specialty</label>
+        <select id="specialty" name="specialty" required>
+          <option value="" disabled selected>Select your specialty</option>
+          <option value="Cardiology">Cardiology</option>
+          <option value="Neurology">Neurology</option>
+          <option value="Pediatrics">Pediatrics</option>
+          <option value="Orthopedics">Orthopedics</option>
+          <option value="Dermatology">Dermatology</option>
+          <option value="General Medicine">General Medicine</option>
+        </select>
+        <span id="specialtyError" class="error-message"></span>
+      </div>
+      <button type="submit" class="btn">Register</button>
+    </form>
+    <div class="login-link">
+      Already have an account? <a href="drlogin.html">Login</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('doctorRegistrationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Reset error messages
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const specialty = document.getElementById('specialty').value;
+
+        let isValid = true;
+
+        if (name.length < 2) {
+            document.getElementById('nameError').textContent = 'Name must be at least 2 characters long.';
+            isValid = false;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            document.getElementById('emailError').textContent = 'Please enter a valid email address.';
+            isValid = false;
+        }
+
+        if (password.length < 6) {
+            document.getElementById('passwordError').textContent = 'Password must be at least 6 characters long.';
+            isValid = false;
+        }
+
+        if (!specialty) {
+            document.getElementById('specialtyError').textContent = 'Please select a specialty.';
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        const formData = { name, email, password, specialty };
+
+        // Send a POST request to the server for doctor registration
+        fetch('http://localhost:3000/drregister', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                alert(data.message || 'Registration successful!');
+                // Redirect to doctor login page after successful registration
+                window.location.href = 'drlogin.html';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Registration failed. Please try again.');
+        });
+    });
+  </script>
+</body>
+</html>

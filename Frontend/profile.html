@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .profile-container, .appointments-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .profile-info, .appointment-info {
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+        .bn {
+            display: block;
+            width: 20%;
+            padding: 0.75rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .profile-info p, .appointment-info p {
+            margin: 10px 0;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+        #imageUpload {
+            display: none;
+        }
+        .appointment-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .appointment-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h1>My Profile</h1>
+        <img id="profilePicture" class="profile-picture" src="/placeholder-profile.png" alt="Profile Picture">
+        <input type="file" id="imageUpload" accept="image/*">
+        <button class="bn" onclick="document.getElementById('imageUpload').click()">Change Profile Picture</button>
+        <div class="profile-info">
+            <p><span class="label">First Name:</span> <span id="firstName"></span></p>
+            <p><span class="label">Last Name:</span> <span id="lastName"></span></p>
+            <p><span class="label">Email:</span> <span id="email"></span></p>
+        </div>
+        <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+
+    <div class="appointments-container">
+        <h1>My Appointments</h1>
+        <div id="appointmentsList" class="appointment-info">
+            <!-- Appointments will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUserProfile();
+            fetchAppointments();
+            setupImageUpload();
+            setupLogout();
+        });
+
+        function fetchUserProfile() {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('You are not logged in. Please log in to view your profile.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            fetch('http://localhost:3000/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Display user details
+                document.getElementById('firstName').textContent = data.firstname;
+                document.getElementById('lastName').textContent = data.lastname;
+                document.getElementById('email').textContent = data.email;
+
+                // Display the profile picture if available
+                if (data.profilePicture) {
+                    document.getElementById('profilePicture').src = `http://localhost:3000${data.profilePicture}`;
+                } else {
+                    document.getElementById('profilePicture').src = '/placeholder-profile.png';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load profile. Please try again.');
+            });
+        }
+
+        function fetchAppointments() {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('You are not logged in. Please log in to view your appointments.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Fetch the user profile to get the users_id
+            fetch('http://localhost:3000/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+                return response.json();
+            })
+            .then(profileData => {
+                const userId = profileData.id; // Get the users_id from the profile data
+
+                // Now fetch appointments using the users_id
+                return fetch(`http://localhost:3000/appointments?users_id=${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch appointments');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("here is the data we fetched", data)
+                const appointmentsList = document.getElementById('appointmentsList');
+                appointmentsList.innerHTML = ''; // Clear existing appointments
+
+                if (data.length === 0) {
+                    appointmentsList.innerHTML = '<p>No appointments found.</p>';
+                    return;
+                }
+
+                data.forEach(appointment => {
+                    const appointmentDiv = document.createElement('div');
+                    appointmentDiv.classList.add('appointment-item');
+                    appointmentDiv.innerHTML = `
+                        <p><span class="label">Doctor:</span> ${appointment.doctor_name}</p>
+                        <p><span class="label">Specialty:</span> ${appointment.doctor_specialty}</p>
+                        <p><span class="label">Date and Time:</span> ${new Date(appointment.date_time).toLocaleString()}</p>
+                        <p><span class="label">Status:</span> ${appointment.status}</p>
+                        <button onclick="cancelAppointment(${appointment.id})">Cancel Appointment</button>
+                        <button onclick="showUpdateForm(${appointment.id})">Update Appointment</button>
+                    `;
+                    appointmentsList.appendChild(appointmentDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load appointments. Please try again.');
+            });
+        }
+
+        function setupImageUpload() {
+            const imageUpload = document.getElementById('imageUpload');
+            imageUpload.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('profilePicture', file);
+
+                    const token = localStorage.getItem('token');
+                    fetch('http://localhost:3000/upload-profile-picture', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.profilePicture) {
+                            document.getElementById('profilePicture').src = `http://localhost:3000${data.profilePicture}`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to upload profile picture. Please try again.');
+                    });
+                }
+            });
+        }
+
+        function setupLogout() {
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            });
+        }
+
+        function cancelAppointment(id) {
+            const token = localStorage.getItem('token');
+            fetch(`http://localhost:3000/appointments/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to cancel appointment');
+                }
+                alert('Appointment cancelled successfully.');
+                fetchAppointments(); // Refresh appointments
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to cancel appointment. Please try again.');
+            });
+        }
+
+        function showUpdateForm(id) {
+            // Redirect to appointment.html with the appointment ID as a query parameter
+            window.location.href = `appointment.html?id=${id}`;
+        }
+    </script>
+</body>
+</html>

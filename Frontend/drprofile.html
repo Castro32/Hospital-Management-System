@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .profile-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .profile-info, .appointments-info {
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .profile-info p {
+            margin: 10px 0;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .appointment {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .appointment p {
+            margin: 5px 0;
+        }
+        .appointment-actions {
+            margin-top: 10px;
+        }
+        .appointment-actions button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h1>My Profile</h1>
+        
+        <div class="profile-info">
+            <p><span class="label">Name:</span> <span id="name"></span></p>
+            <p><span class="label">Email:</span> <span id="email"></span></p>
+            <p><span class="label">Specialty:</span> <span id="specialty"></span></p>
+        </div>
+
+        <button id="logoutBtn" class="btn">Logout</button>
+
+        <h2>My Appointments</h2>
+        <div id="appointmentsList">
+            <!-- Appointments will be populated here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUserProfile();
+            fetchAppointments();
+            setupLogout();
+        });
+
+        function fetchUserProfile() {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('You are not logged in. Please log in to view your profile.');
+                window.location.href = 'drlogin.html';
+                return;
+            }
+
+            fetch('http://localhost:3000/drprofile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('name').textContent = data.name;
+                document.getElementById('email').textContent = data.email;
+                document.getElementById('specialty').textContent = data.specialty;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load profile. Please try again.');
+            });
+        }
+
+        function fetchAppointments() {
+            const token = localStorage.getItem('token');
+
+            fetch('http://localhost:3000/drappointments', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch appointments');
+                }
+                return response.json();
+            })
+            .then(appointments => {
+                const appointmentsList = document.getElementById('appointmentsList');
+                appointmentsList.innerHTML = ''; // Clear existing appointments
+
+                if (appointments.length === 0) {
+                    appointmentsList.innerHTML = '<p>No upcoming appointments.</p>';
+                } else {
+                    appointments.forEach(appointment => {
+                        const appointmentDiv = document.createElement('div');
+                        appointmentDiv.className = 'appointment';
+                        appointmentDiv.innerHTML = `
+                            <p><strong>Patient:</strong> ${appointment.patient_firstname} ${appointment.patient_lastname}</p>
+                            <p><strong>Date and Time:</strong> ${new Date(appointment.date_time).toLocaleString()}</p>
+                            <p><strong>Status:</strong> ${appointment.status}</p>
+                            
+                        `;
+                        appointmentsList.appendChild(appointmentDiv);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load appointments. Please try again.');
+            });
+        }
+
+        function setupLogout() {
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('token');
+                window.location.href = 'drlogin.html';
+            });
+        }
+
+        function cancelAppointment(appointmentId) {
+            // Implement cancel appointment functionality
+            const token = localStorage.getItem('token');
+            fetch(`http://localhost:3000/appointments/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to cancel appointment');
+                }
+                alert('Appointment cancelled successfully.');
+                fetchAppointments(); // Refresh appointments
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to cancel appointment. Please try again.');
+            });
+            console.log('Cancelling appointment:', appointmentId);
+        }
+
+        function updateAppointment(appointmentId) {
+            // Implement update appointment functionality
+            console.log('Updating appointment:', appointmentId);
+        }
+    </script>
+</body>
+</html>

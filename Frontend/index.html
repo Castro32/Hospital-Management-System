@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telemedicine Application</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #3498db;
+      padding: 1em;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    nav ul li {
+      margin: 0 1em;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: white;
+      font-weight: 600;
+      padding: 0.5em 1em;
+      transition: all 0.3s ease;
+    }
+
+    nav ul li a:hover {
+      background-color: white;
+      color: #3498db;
+      border-radius: 25px;
+    }
+
+    #hero {
+      background: linear-gradient(rgba(52, 152, 219, 0.8), rgba(52, 152, 219, 0.8)), url('https://placekitten.com/1200/800') no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    .hero-text {
+      color: white;
+      max-width: 800px;
+      padding: 2em;
+    }
+
+    .hero-text h1 {
+      font-size: 3.5em;
+      margin-bottom: 0.5em;
+      font-weight: 700;
+    }
+
+    .hero-text p {
+      font-size: 1.2em;
+      margin-bottom: 1.5em;
+    }
+
+    .btn {
+      padding: 0.7em 1.5em;
+      background-color: #e74c3c;
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #c0392b;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .section {
+      padding: 4em 2em;
+      margin: 2em 0;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #3498db;
+      margin-bottom: 1em;
+      font-size: 2.5em;
+      text-align: center;
+    }
+
+    .features {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+
+    .feature-item {
+      flex-basis: 22%;
+      text-align: center;
+      padding: 2em;
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      margin: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .feature-item i {
+      font-size: 3em;
+      color: #3498db;
+      margin-bottom: 0.5em;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2em;
+      background-color: #34495e;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .hero-text h1 {
+        font-size: 2.5em;
+      }
+
+      .feature-item {
+        flex-basis: 45%;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="signup.html" class="btn">Make Appointment</a></li>
+        <li><a href="drlogin.html" class="btn">Dr Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="hero">
+    <div class="hero-text">
+      <h1>Your Health, Your Way</h1>
+      <p>Connect with top healthcare professionals from the comfort of your home. Experience the future of medicine today.</p>
+      <a href="#features" class="btn">Explore Features</a>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <h2>About Us</h2>
+    <p>Our telemedicine application bridges the gap between healthcare providers and patients, enabling seamless remote consultations, appointment bookings, and medical management. Our aim is to make healthcare accessible and efficient for everyone.</p>
+  </section>
+
+  <section id="features" class="section">
+    <h2>Our Features</h2>
+    <div class="features">
+      <div class="feature-item">
+        <i class="fas fa-user-md"></i>
+        <h3>Patient Management</h3>
+        <p>Efficiently manage patient records and history.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-calendar-alt"></i>
+        <h3>Doctor Scheduling</h3>
+        <p>Easily schedule and manage doctor availability.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-laptop-medical"></i>
+        <h3>Video Consultations</h3>
+        <p>High-quality video calls for remote consultations.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-lock"></i>
+        <h3>Secure Platform</h3>
+        <p>Your data is protected with state-of-the-art security.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section">
+    <h2>Contact Us</h2>
+    <p>If you have any questions, feel free to reach out to our support team at <strong>support@telemedicine.com</strong></p>
+  </section>
+
+  <footer>
+    <p>&copy; 2024 Telemedicine Application. All rights reserved.</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        select, input[type="datetime-local"] {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        #appointmentList {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Book an Appointment</h1>
+        <form id="appointmentForm">
+            <label for="doctorSelect">Select Doctor:</label>
+            <select id="doctorSelect" required>
+                <option value="">Choose a doctor</option>
+                <!-- Doctor options will be populated dynamically -->
+            </select>
+
+            <label for="appointmentDateTime">Select Date and Time:</label>
+            <input type="datetime-local" id="appointmentDateTime" required>
+
+            <button type="submit">Book Appointment</button>
+        </form>
+
+        <div id="message"></div>
+
+        <div id="appointmentList">
+            <h2>Your Appointments</h2>
+            <ul id="appointments">
+                <!-- Existing appointments will be displayed here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Fetch doctors and populate the select
+        function fetchDoctors() {
+            const token = localStorage.getItem('token');
+            fetch('http://127.0.0.1:3000/doctors', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch doctors');
+                    }
+                    return response.json();
+                })
+                .then(doctors => {
+                    if (!Array.isArray(doctors)) {
+                        throw new Error('Invalid response format');
+                    }
+                    const select = document.getElementById('doctorSelect');
+                    doctors.forEach(doctor => {
+                        const option = document.createElement('option');
+                        option.value = doctor.id;
+                        option.textContent = `${doctor.name} - ${doctor.specialty}`;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching doctors:', error);
+                    showMessage('Failed to load doctors. Please try again later.', 'error');
+                });
+        }
+
+
+        // Fetch and display existing appointments
+        function loadAppointments() {
+            const token = localStorage.getItem('token');
+            fetch('http://127.0.0.1:3000/appointments', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch appointments');
+                    }
+                    return response.json();
+                })
+                .then(appointments => {
+                    if (!Array.isArray(appointments)) {
+                        throw new Error('Invalid response format');
+                    }
+                    const appointmentList = document.getElementById('appointments');
+                    appointmentList.innerHTML = ''; // Clear existing appointments
+
+                    appointments.forEach(appointment => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            ${appointment.doctor_name} - ${new Date(appointment.date_time).toLocaleString()}
+                            <button onclick="cancelAppointment(${appointment.id})">Cancel</button>
+                            <button onclick="showUpdateForm(${appointment.id})">Update</button>
+                        `;
+                        appointmentList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading appointments:', error);
+                    showMessage('Failed to load appointments. Please try again later.', 'error');
+                });
+        }
+
+        // Show message to the user
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = type;
+            messageDiv.style.display = 'block';
+        }
+
+        // Handle form submission to book an appointment
+        document.getElementById('appointmentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const doctorId = document.getElementById('doctorSelect').value;
+            const appointmentDateTime = document.getElementById('appointmentDateTime').value;
+
+            if (!doctorId || !appointmentDateTime) {
+                showMessage('Please fill out all fields.', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showMessage('You are not logged in. Please log in to book an appointment.', 'error');
+                return;
+            }
+
+            fetch('http://127.0.0.1:3000/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    doctorId: doctorId,
+                    appointmentDateTime: appointmentDateTime
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Appointment booked successfully!', 'success');
+                    loadAppointments(); // Refresh the appointment list
+                    // Redirect to the profile page
+                    window.location.href = 'profile.html';
+                } else {
+                    showMessage('Failed to book appointment. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error booking appointment:', error);
+                showMessage('Failed to book appointment. Please try again later.', 'error');
+            });
+        });
+
+        // Cancel Appointment
+        function cancelAppointment(appointmentId) {
+            if (confirm('Are you sure you want to cancel this appointment?')) {
+                const token = localStorage.getItem('token');
+                fetch(`http://127.0.0.1:3000/appointments/${appointmentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Appointment canceled successfully.');
+                            loadAppointments(); // Refresh the appointment list
+                        } else {
+                            alert('Failed to cancel the appointment.');
+                        }
+                    })
+                    .catch(error => console.error('Error canceling appointment:', error));
+            }
+        }
+
+        // Show Update Form
+        function showUpdateForm(appointmentId) {
+            const token = localStorage.getItem('token');
+            fetch(`http://127.0.0.1:3000/appointments/${appointmentId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => response.json())
+                .then(appointment => {
+                    document.getElementById('doctorSelect').value = appointment.doctorId;
+                    document.getElementById('appointmentDateTime').value = new Date(appointment.appointmentDateTime).toISOString().slice(0,16);
+
+                    // Update form submission logic
+                    const form = document.getElementById('appointmentForm');
+                    form.onsubmit = function(event) {
+                        event.preventDefault();
+                        updateAppointment(appointmentId);
+                    };
+                })
+                .catch(error => console.error('Error fetching appointment for update:', error));
+        }
+
+        // Update Appointment
+        function updateAppointment(appointmentId) {
+            const doctorId = document.getElementById('doctorSelect').value;
+            const appointmentDateTime = document.getElementById('appointmentDateTime').value;
+
+            if (!doctorId || !appointmentDateTime) {
+                showMessage('Please fill out all fields.', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            fetch(`http://127.0.0.1:3000/appointments/${appointmentId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    doctorId: doctorId,
+                    appointmentDateTime: appointmentDateTime
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Appointment updated successfully!');
+                        loadAppointments(); // Refresh the appointment list
+                    } else {
+                        alert('Failed to update appointment.');
+                    }
+                })
+                .catch(error => console.error('Error updating appointment:', error));
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showMessage('You are not logged in. Please log in to view and book appointments.', 'error');
+                return;
+            }
+            fetchDoctors();
+            loadAppointments();
+        });
+    </script>
+</body>
+</html>

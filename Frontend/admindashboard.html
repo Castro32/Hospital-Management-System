@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management Admin Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul>
+                <li><a href="#" onclick="loadContent('dashboard')">Dashboard</a></li>
+                <li><a href="#" onclick="loadContent('patients')">Patients</a></li>
+                <li><a href="#" onclick="loadContent('doctors')">Doctors</a></li>
+                <li><a href="#" onclick="loadContent('appointments')">Appointments</a></li>
+                <li><a href="#" onclick="loadContent('reports')">Reports</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="header">
+                <h1>Hospital Management System</h1>
+                <button id="logoutBtn">Logout</button>
+            </div>
+            <div class="content" id="content">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchData(endpoint) {
+            try {
+                const token = localStorage.getItem('token'); // Retrieve the token
+                const response = await fetch(`http://localhost:3000/${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Fetch error:', error);
+                return [];
+            }
+        }
+    
+        function loadContent(section) {
+            const contentDiv = document.getElementById('content');
+            let content = '';
+    
+            switch (section) {
+                case 'dashboard':
+                    content = '<h2>Dashboard</h2><p>Welcome to the admin dashboard.</p>';
+                    break;
+                case 'patients':
+                    content = '<h2>Patients</h2><table><tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Email</th></tr>';
+                    fetchData('admin/patients').then(data => {
+                        data.forEach(patient => {
+                            content += `<tr><td>${patient.id}</td><td>${patient.firstname}</td><td>${patient.lastname}</td><td>${patient.email}</td></tr>`;
+                        });
+                        content += '</table>';
+                        contentDiv.innerHTML = content;
+                    });
+                    break;
+                case 'doctors':
+                    content = '<h2>Doctors</h2><table><tr><th>ID</th><th>Name</th><th>Email</th><th>Specialty</th></tr>';
+                    fetchData('admin/doctors').then(data => {
+                        data.forEach(doctor => {
+                            content += `<tr><td>${doctor.id}</td><td>${doctor.name}</td><td>${doctor.email}</td><td>${doctor.specialty}</td></tr>`;
+                        });
+                        content += '</table>';
+                        contentDiv.innerHTML = content;
+                    });
+                    break;
+                case 'appointments':
+                    content = '<h2>Appointments</h2><table><tr><th>ID</th><th>Doctor Name</th><th>Specialty</th><th>Date Time</th></tr>';
+                    fetchData('admin/appointments').then(data => {
+                        data.forEach(appointment => {
+                            content += `<tr><td>${appointment.id}</td><td>${appointment.doctor_name}</td><td>${appointment.doctor_specialty}</td><td>${appointment.date_time}</td></tr>`;
+                        });
+                        content += '</table>';
+                        contentDiv.innerHTML = content;
+                    });
+                    break;
+                case 'reports':
+                    content = '<h2>Reports</h2><p>View and generate reports here.</p>';
+                    break;
+                default:
+                    content = '<h2>Dashboard</h2><p>Welcome to the admin dashboard.</p>';
+            }
+    
+            contentDiv.innerHTML = content;
+        }
+    
+        function logout() {
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('token');  // Remove the token
+                alert('Logout successful!');       // Show alert after successful logout
+                window.location.href = 'adminlogin.html';  // Redirect to login page
+            });
+        }
+    
+        // Call the logout function to add the event listener
+        logout();
+    
+        // Load default content
+        loadContent('dashboard');
+    </script>
+    
+</body>
+</html>

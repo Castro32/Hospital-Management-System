@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Login</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #218838;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Doctor Login</h2>
+        <div id="errorContainer" class="error"></div>
+        <form id="loginForm">
+            <input type="email" id="email" name="email" placeholder="Email" required aria-label="Email" />
+            <input type="password" id="password" name="password" placeholder="Password" required aria-label="Password" />
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loginForm = document.getElementById('loginForm');
+            const errorContainer = document.getElementById('errorContainer');
+
+            loginForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                // Basic validation
+                if (!email || !password) {
+                    showError('All fields are required.');
+                    return;
+                }
+
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(email)) {
+                    showError('Please enter a valid email address.');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showError('Password must be at least 6 characters long.');
+                    return;
+                }
+
+                // Create the data object to send to the server
+                const formData = {
+                    email,
+                    password,
+                };
+                
+                // Send a POST request to the server
+                fetch('http://localhost:3000/drlogin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.error || 'Login failed');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message || 'Login successful!');
+                    localStorage.setItem('token', data.token);
+                    loginForm.reset(); // Reset the form
+                    window.location.href = 'drprofile.html';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError(error.message);
+                });
+            });
+
+            function showError(message) {
+                errorContainer.innerText = message;
+                // Optionally, clear error message after a few seconds
+                setTimeout(() => {
+                    errorContainer.innerText = '';
+                }, 3000);
+            }
+        });
+    </script>
+
+</body>
+</html>
