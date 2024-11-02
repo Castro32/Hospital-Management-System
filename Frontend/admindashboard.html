@@ -108,7 +108,7 @@
         async function fetchData(endpoint) {
             try {
                 const token = localStorage.getItem('token'); // Retrieve the token
-                const response = await fetch(`http://localhost:3000/${endpoint}`, {
+                const response = await fetch(`https://hospital-management-system-4-kln8.onrender.com/${endpoint}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`

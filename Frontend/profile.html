@@ -120,7 +120,7 @@
                 return;
             }
 
-            fetch('http://localhost:3000/profile', {
+            fetch('https://hospital-management-system-4-kln8.onrender.com/profile', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -140,7 +140,7 @@
 
                 // Display the profile picture if available
                 if (data.profilePicture) {
-                    document.getElementById('profilePicture').src = `http://localhost:3000${data.profilePicture}`;
+                    document.getElementById('profilePicture').src = `https://hospital-management-system-4-kln8.onrender.com${data.profilePicture}`;
                 } else {
                     document.getElementById('profilePicture').src = '/placeholder-profile.png';
                 }
@@ -161,7 +161,7 @@
             }
 
             // Fetch the user profile to get the users_id
-            fetch('http://localhost:3000/profile', {
+            fetch('https://hospital-management-system-4-kln8.onrender.com/profile', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -177,7 +177,7 @@
                 const userId = profileData.id; // Get the users_id from the profile data
 
                 // Now fetch appointments using the users_id
-                return fetch(`http://localhost:3000/appointments?users_id=${userId}`, {
+                return fetch(`https://hospital-management-system-4-kln8.onrender.com/appointments?users_id=${userId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -229,7 +229,7 @@
                     formData.append('profilePicture', file);
 
                     const token = localStorage.getItem('token');
-                    fetch('http://localhost:3000/upload-profile-picture', {
+                    fetch('https://hospital-management-system-4-kln8.onrender.com/upload-profile-picture', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`
@@ -239,7 +239,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.profilePicture) {
-                            document.getElementById('profilePicture').src = `http://localhost:3000${data.profilePicture}`;
+                            document.getElementById('profilePicture').src = `https://hospital-management-system-4-kln8.onrender.com${data.profilePicture}`;
                         }
                     })
                     .catch(error => {
@@ -259,7 +259,7 @@
 
         function cancelAppointment(id) {
             const token = localStorage.getItem('token');
-            fetch(`http://localhost:3000/appointments/${id}`, {
+            fetch(`https://hospital-management-system-4-kln8.onrender.com/appointments/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

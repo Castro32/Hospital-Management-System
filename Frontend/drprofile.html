@@ -108,7 +108,7 @@
                 return;
             }
 
-            fetch('http://localhost:3000/drprofile', {
+            fetch('https://hospital-management-system-4-kln8.onrender.com/drprofile', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -134,7 +134,7 @@
         function fetchAppointments() {
             const token = localStorage.getItem('token');
 
-            fetch('http://localhost:3000/drappointments', {
+            fetch('https://hospital-management-system-4-kln8.onrender.com/drappointments', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -182,7 +182,7 @@
         function cancelAppointment(appointmentId) {
             // Implement cancel appointment functionality
             const token = localStorage.getItem('token');
-            fetch(`http://localhost:3000/appointments/${id}`, {
+            fetch(`https://hospital-management-system-4-kln8.onrender.com/appointments/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

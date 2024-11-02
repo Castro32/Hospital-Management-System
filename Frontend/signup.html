@@ -135,7 +135,7 @@
 <body>
   <div class="signup-container">
     <h2>Sign Up To Make Appointment</h2>
-    <form  action="http://localhost:3000/signup" method="post" id="signupForm">
+    <form  action="https://hospital-management-system-4-kln8.onrender.com/signup" method="post" id="signupForm">
       <div class="name-group">
         <div class="input-group">
           <label for="firstname">First Name</label>
@@ -180,7 +180,7 @@
     confirmPassword: document.getElementById('confirm-password').value
   };
 
-  fetch('http://localhost:3000/signup', {
+  fetch('https://hospital-management-system-4-kln8.onrender.com/signup', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

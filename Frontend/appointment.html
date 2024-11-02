@@ -98,7 +98,7 @@
         // Fetch doctors and populate the select
         function fetchDoctors() {
             const token = localStorage.getItem('token');
-            fetch('http://127.0.0.1:3000/doctors', {
+            fetch('https://hospital-management-system-4-kln8.onrender.com/doctors', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -131,7 +131,7 @@
         // Fetch and display existing appointments
         function loadAppointments() {
             const token = localStorage.getItem('token');
-            fetch('http://127.0.0.1:3000/appointments', {
+            fetch('https://hospital-management-system-4-kln8.onrender.com/appointments', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -190,7 +190,7 @@
                 return;
             }
 
-            fetch('http://127.0.0.1:3000/appointments', {
+            fetch('https://hospital-management-system-4-kln8.onrender.com/appointments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -222,7 +222,7 @@
         function cancelAppointment(appointmentId) {
             if (confirm('Are you sure you want to cancel this appointment?')) {
                 const token = localStorage.getItem('token');
-                fetch(`http://127.0.0.1:3000/appointments/${appointmentId}`, {
+                fetch(`https://hospital-management-system-4-kln8.onrender.com/appointments/${appointmentId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -243,7 +243,7 @@
         // Show Update Form
         function showUpdateForm(appointmentId) {
             const token = localStorage.getItem('token');
-            fetch(`http://127.0.0.1:3000/appointments/${appointmentId}`, {
+            fetch(`https://hospital-management-system-4-kln8.onrender.com/appointments/${appointmentId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -274,7 +274,7 @@
             }
 
             const token = localStorage.getItem('token');
-            fetch(`http://127.0.0.1:3000/appointments/${appointmentId}`, {
+            fetch(`https://hospital-management-system-4-kln8.onrender.com/appointments/${appointmentId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
