@@ -17,19 +17,27 @@ Profile Management: Users can manage their profiles, update personal information
 ##Patient Access
 
 Registration: /signup
+
+
 Login: /login
 
 ##Doctor Access
 
 Registration: /drregistration
+
+
 Login: /drlogin
 
 ##Admin Access
 
 Login: /adminLogin
+
+
 Default Admin Credentials:
 
 Email: admin@gmail.com
+
+
 Password: admin1234
 
 
