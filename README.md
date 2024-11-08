@@ -13,6 +13,26 @@ Registration and Login: Secure user registration and login system, with role-bas
 Profile Management: Users can manage their profiles, update personal information, and view their appointment history.
 
 
+###Access Points
+##Patient Access
+
+Registration: /signup
+Login: /login
+
+##Doctor Access
+
+Registration: /drregistration
+Login: /drlogin
+
+##Admin Access
+
+Login: /adminLogin
+Default Admin Credentials:
+
+Email: admin@gmail.com
+Password: admin1234
+
+
 
 ### Appointment Booking:
 
